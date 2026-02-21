@@ -1,6 +1,13 @@
 # guardrail -> check if the topic is appropriate, and reject if necessary
-from agents import Agent, RunContextWrapper, input_guardrail, Runner, GuardrailFunctionOutput
-from models import UserAccountContext, InputGuardRailOutput
+import streamlit as st
+from agents import Agent, Handoff, RunContextWrapper, input_guardrail, Runner, GuardrailFunctionOutput, handoff
+from agents.extensions.handoff_prompt import RECOMMENDED_PROMPT_PREFIX #when agent has handoff, it is recommended to put this on the top of your agent instructions
+from agents.extensions import handoff_filters
+from models import UserAccountContext, InputGuardRailOutput, HandoffData
+from my_agents.account_agent import account_agent
+from my_agents.billing_agent import billing_agent
+from my_agents.order_agent import order_agent
+from my_agents.technical_agent import technical_agent
 
 input_guardrail_agent = Agent(
     name="Input Guardrail Agent",
@@ -22,6 +29,8 @@ async def off_topic_guardrail(wrapper: RunContextWrapper[UserAccountContext], ag
 
 def dynamic_triage_agent_instructions(wrapper: RunContextWrapper[UserAccountContext], agent: Agent[UserAccountContext]):
     return f"""
+    {RECOMMENDED_PROMPT_PREFIX}
+
     You are a customer support agent. You ONLY help customers with their questions about their User Account, Billing, Orders, or Technical Support.
     You call customers by their name.
     The customer's name is: {wrapper.context.name}.
@@ -72,10 +81,31 @@ def dynamic_triage_agent_instructions(wrapper: RunContextWrapper[UserAccountCont
     - Unclear issues: Ask 1-2 clarifying questions before routing
     """
 
-    
+def handle_handoff(wrapper: RunContextWrapper[UserAccountContext], input_data: HandoffData):
+    with st.sidebar:
+        st.write(f"""
+            Handing off to {input_data.to_agent_name}
+            Reason: {input_data.reason}
+            Issue type: {input_data.issue_type}
+            Description: {input_data.issue_description}
+        """)
+
+def make_handoff(agent):
+    return handoff(
+        agent=agent,
+        on_handoff=handle_handoff, #handoff가 발생할 때 실행되는 함수
+        input_type=HandoffData,
+        input_filter=handoff_filters.remove_all_tools #handoff를 할 때 대화 history를 전부 넘기지 X. tools 사용 기록을 지운 뒤 보냄
+    )
 
 triage_agent = Agent(
     name="Triage Agent",
     instructions=dynamic_triage_agent_instructions, #string or function(callable)
     input_guardrails=[off_topic_guardrail],
-)
+    handoffs=[
+            make_handoff(account_agent),
+            make_handoff(billing_agent),
+            make_handoff(order_agent),
+            make_handoff(technical_agent),
+        ]
+    )

@@ -29,6 +29,9 @@ if "session" not in st.session_state: #딱 한 번만 실행됨!
     )
 session = st.session_state["session"]
 
+if "agent" not in st.session_state:
+    st.session_state["agent"]=triage_agent
+
 async def paint_history():
     messages = await session.get_items()
     for message in messages:
@@ -51,7 +54,7 @@ async def run_agent(message):
 
         try:
             stream = Runner.run_streamed(
-                triage_agent,
+                st.session_state["agent"],
                 message,
                 session=session,
                 context=user_account_ctx #function tools get this cxt, not llm nodel
@@ -63,6 +66,14 @@ async def run_agent(message):
                     if event.data.type=="response.output_text.delta":
                         response+=event.data.delta
                         text_placeholder.write(response)
+                elif event.type=="agent_updated_stream_event":
+                    if st.session_state["agent"].name != event.new_agent.name:
+                        st.write(f"🤖 Transfered from {st.session_state["agent"].name} to {event.new_agent.name}")
+                        st.session_state["agent"]=event.new_agent
+
+                        text_placeholder=st.empty()
+                        response=""
+
         except InputGuardrailTripwireTriggered:
             st.write("I can't help you with that.")
 
