@@ -1,6 +1,6 @@
 from agents import Agent, RunContextWrapper
 from models import UserAccountContext
-
+from tools import run_diagnostic_check, provide_troubleshooting_steps, escalate_to_engineering, AgentToolUsageLoggingHooks
 
 def dynamic_technical_agent_instructions(
     wrapper: RunContextWrapper[UserAccountContext],
@@ -39,4 +39,10 @@ def dynamic_technical_agent_instructions(
 technical_agent = Agent(
     name="Technical Support Agent",
     instructions=dynamic_technical_agent_instructions,
+    tools=[
+        run_diagnostic_check,
+        provide_troubleshooting_steps,
+        escalate_to_engineering,
+    ],
+    hooks=AgentToolUsageLoggingHooks(),
 )
