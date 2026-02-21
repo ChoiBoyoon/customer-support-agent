@@ -4,7 +4,7 @@ dotenv.load_dotenv()
 from openai import OpenAI
 import asyncio
 import streamlit as st
-from agents import Agent, Runner, SQLiteSession, InputGuardrailTripwireTriggered
+from agents import Agent, Runner, SQLiteSession, InputGuardrailTripwireTriggered, OutputGuardrailTripwireTriggered
 from models import UserAccountContext
 from my_agents.triage_agent import triage_agent
 
@@ -18,7 +18,7 @@ client = OpenAI()
 
 user_account_ctx = UserAccountContext( # in real-world situation, you need to preload this info from your db
     customer_id=1,
-    name="boyoon",
+    name="Boyoon",
     tier="basic"
 )
 
@@ -75,7 +75,10 @@ async def run_agent(message):
                         response=""
 
         except InputGuardrailTripwireTriggered:
-            st.write("I can't help you with that.")
+            st.write("🚨 This request violates our policy.")
+        except OutputGuardrailTripwireTriggered:
+            st.write("🚨 This response violates our policy.")
+            st.session_state["text_placeholder"].empty()
 
 
 message = st.chat_input("Write a message to your assistant.")
