@@ -1,0 +1,25 @@
+# Customer Support Agent
+Multi-agent customer support chatbot. <code>triage_agent</code> understand customer's request and starts appropriate agent (one of <code>account</code>, <code>billing</code>, <code>order</code>, <code>technical</code>), and that agent will take care of request using appropriate tool.
+
+## 🚀 Demo 
+* start appropriate agent according to the customer's request
+<img src="screenshots/customer_agent_screenshot1.png">
+* input guardrail blocks inappropriate or irrelevant requests
+<img src="screenshots/input_guardrail_screenshot.png">
+
+## 📌 Features
+1. <code>triage_agent</code> receives customer's request, and starts appropriate agent according to the type of request (handoff). If the customer makes inappropriate or irrelevant request or question, we say "🚨 This request violates our policy"<br/>
+2. one of agents (<code>account_agent</code>, <code>billing_agent</code>, <code>order_agent</code>, <code>technical_agent</code>) receives request and take care of it by using one of the tools in <code>tools.py</code></br>
+(🔨 tools in <code>tools.py</code> are dummy tools that are designed to display how those tools should work.)
+
+## 🛠 Tech Stack
+- Python, OpenAI Agent SDK, streamlit
+
+## ⚙️ Installation
+Requires Python 3.13+
+```bash
+git clone https://github.com/ChoiBoyoon/customer-support-agent.git
+cd <your project directory>
+uv sync
+uv run streamlit run main.py
+```

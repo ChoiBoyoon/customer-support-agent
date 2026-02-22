@@ -80,7 +80,6 @@ async def run_agent(message):
             st.write("🚨 This response violates our policy.")
             st.session_state["text_placeholder"].empty()
 
-
 message = st.chat_input("Write a message to your assistant.")
 
 if message:
