@@ -39,9 +39,8 @@ async def paint_history():
             with st.chat_message(message["role"]):
                 if message["role"]=="user":
                     st.write(message["content"])
-                else:
-                    if message["type"]=="message":
-                        st.write(message["content"][0]["text"])
+                else:  
+                    st.write(message["content"][0]["text"])
 
 asyncio.run(paint_history())
 
@@ -83,8 +82,8 @@ async def run_agent(message):
 message = st.chat_input("Write a message to your assistant.")
 
 if message:
-    if "text_placeholder" in st.session_state:
-        st.session_state["text_placeholder"].empty()
+    # if "text_placeholder" in st.session_state:
+    #     st.session_state["text_placeholder"].empty()
     
     if message:
         with st.chat_message("human"):

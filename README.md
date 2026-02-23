@@ -12,7 +12,7 @@ Multi-agent customer support chatbot. <code>triage_agent</code> understand custo
 2. one of agents (<code>account_agent</code>, <code>billing_agent</code>, <code>order_agent</code>, <code>technical_agent</code>) receives request and take care of it by using one of the tools in <code>tools.py</code></br>
 (🔨 tools in <code>tools.py</code> are dummy tools that are designed to display how those tools should work.)
 3. All agents receive <b>context</b> about the user (user name, email address, account status(personl, enterprise, vip))
-4. <b>Input guardrail</b> and <b>output guardrail</b> is on place -- blocks inappropriate request and prevents inappropriate response (ex. prevent giving away sensitive information)
+4. <b>Input guardrail</b> and <b>output guardrail</b> is on place -- blocks inappropriate request and prevents sensitive response (ex. prevent giving away sensitive information)
 
 ## 🛠 Tech Stack
 - Python, OpenAI Agent SDK, streamlit
@@ -27,6 +27,6 @@ uv run streamlit run main.py
 ```
 
 ## 🚀 Next step
-- get user context directly from database (currently dummy context)
-- develop real tools to actually take care of customer's request (if it's simple request like change account settings)
-- proactively take care of customers (ex. when the delivery is delayed, automatically gives them updated information, issue a coupon, and engage a conversation to know if there's additional actions to take)
+- get user context dynamically from database (currently dummy context)
+- develop real tools to connect to existing system and automatically take care of customer's request (when it comes to simple request like "changing account settings")
+- proactively take care of customers (ex. when the delivery is delayed, automatically provides updated information, issue a coupon, and engage a conversation to know if there's any additional actions required)
